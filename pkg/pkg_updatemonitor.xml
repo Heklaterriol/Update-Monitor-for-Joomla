@@ -6,11 +6,11 @@
     <creationDate>2026-11</creationDate>
     <copyright>(C) 2026</copyright>
     <license>GNU General Public License version 2 or later</license>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
     <description>Monitors Joomla, extension and language pack updates, tracks history and sends notifications. Does not install updates.</description>
     <scriptfile>script.php</scriptfile>
     <updateservers>
-        <server type="extension" priority="1" name="Update Monitor for Joomla">https://raw.githubusercontent.com/YOUR_GITHUB_USER/YOUR_REPO/main/updatemonitor_update.xml</server>
+        <server type="extension" priority="1" name="Update Monitor for Joomla">https://raw.githubusercontent.com/Heklaterriol/Update-Monitor-for-Joomla/main/updatemonitor_update.xml</server>
     </updateservers>
     <files folder="packages">
         <file type="component" id="com_updatemonitor">com_updatemonitor.zip</file>

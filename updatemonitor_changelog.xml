@@ -3,7 +3,7 @@
     <changelog>
         <element>pkg_updatemonitor</element>
         <type>package</type>
-        <version>1.0.7</version>
+        <version>1.0.8</version>
         <security/>
         <fix/>
         <language/>
