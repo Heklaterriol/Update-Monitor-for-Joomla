@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<updates>
+    <update>
+        <name>Update Monitor for Joomla</name>
+        <description>Monitors available updates for Joomla, extensions and language packs, tracks their history and notifies administrators. Does not install updates.</description>
+        <element>pkg_updatemonitor</element>
+        <type>package</type>
+        <version>1.0.7</version>
+        <client>site</client>
+        <infourl title="Update Monitor for Joomla">https://github.com/YOUR_GITHUB_USER/YOUR_REPO</infourl>
+        <changelogurl>https://raw.githubusercontent.com/YOUR_GITHUB_USER/YOUR_REPO/main/updatemonitor_changelog.xml</changelogurl>
+        <downloads>
+            <downloadurl type="full" format="zip">https://github.com/YOUR_GITHUB_USER/YOUR_REPO/releases/download/v1.0.7/pkg_updatemonitor.zip</downloadurl>
+        </downloads>
+        <tags>
+            <tag>stable</tag>
+        </tags>
+        <maintainer>Your Name</maintainer>
+        <maintainerurl>https://github.com/YOUR_GITHUB_USER</maintainerurl>
+        <targetplatform name="joomla" version="((5\.[0-9]+)|(6\.[0-9]+))"/>
+        <php_minimum>8.1</php_minimum>
+        <sha256>051587258e0c4cba5fbf9bbe5e388609c1d074dfa7eabafb9160b0621960ac29</sha256>
+    </update>
+</updates>

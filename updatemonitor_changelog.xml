@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changelogs>
+    <changelog>
+        <element>pkg_updatemonitor</element>
+        <type>package</type>
+        <version>1.0.7</version>
+        <security/>
+        <fix/>
+        <language/>
+        <addition>
+            <item>Option for detailed error messages (file and line) in the activity log; off by default.</item>
+        </addition>
+        <change>
+            <item>Changelog XML containing a DTD or entity declaration is rejected.</item>
+            <item>The configured site URL is only used for mail links if it is an http(s) address.</item>
+            <item>Logged errors no longer include file names and line numbers unless the debug option is on.</item>
+        </change>
+        <remove/>
+        <note/>
+    </changelog>
+    <changelog>
+        <element>pkg_updatemonitor</element>
+        <type>package</type>
+        <version>1.0.6</version>
+        <security/>
+        <fix/>
+        <language/>
+        <addition>
+            <item>Joomla update server support: the package can now be updated through the Joomla installer.</item>
+        </addition>
+        <change>
+            <item>Renamed to "Update Monitor for Joomla".</item>
+            <item>Hardening: only http(s) links are accepted from update data, changelog URLs must resolve to public addresses, redirects are validated, downloads are size- and time-limited, changelogs are parsed without XPath, auto-check on open is throttled.</item>
+        </change>
+        <remove/>
+        <note/>
+    </changelog>
+    <changelog>
+        <element>pkg_updatemonitor</element>
+        <type>package</type>
+        <version>1.0.5</version>
+        <security/>
+        <fix>
+            <item>The activity log no longer warns about update server packages that are not installed.</item>
+        </fix>
+        <language/><addition/><change/><remove/><note/>
+    </changelog>
+    <changelog>
+        <element>pkg_updatemonitor</element>
+        <type>package</type>
+        <version>1.0.4</version>
+        <security/><fix/><language/>
+        <addition>
+            <item>Check when the component is opened (never sends mail).</item>
+            <item>Separate options for emails after manual and scheduled checks.</item>
+            <item>Link to the Joomla extension update page on the dashboard.</item>
+        </addition>
+        <change>
+            <item>Check result message is green without updates and yellow with updates.</item>
+        </change>
+        <remove/><note/>
+    </changelog>
+    <changelog>
+        <element>pkg_updatemonitor</element>
+        <type>package</type>
+        <version>1.0.3</version>
+        <security/><fix/><language/><addition/>
+        <change>
+            <item>Joomla Core is shown separately on the dashboard and in emails.</item>
+            <item>Emails list new updates first and all other open updates below.</item>
+        </change>
+        <remove/><note/>
+    </changelog>
+    <changelog>
+        <element>pkg_updatemonitor</element>
+        <type>package</type>
+        <version>1.0.2</version>
+        <security/>
+        <fix>
+            <item>Database writes failed silently, so history and log stayed empty.</item>
+        </fix>
+        <language/><addition/><change/><remove/><note/>
+    </changelog>
+    <changelog>
+        <element>pkg_updatemonitor</element>
+        <type>package</type>
+        <version>1.0.0</version>
+        <security/><fix/><language/>
+        <addition>
+            <item>Initial release.</item>
+        </addition>
+        <change/><remove/><note/>
+    </changelog>
+</changelogs>

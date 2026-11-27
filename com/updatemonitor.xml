@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="component" method="upgrade">
+    <name>com_updatemonitor</name>
+    <author>Your Name</author>
+    <creationDate>2026-11</creationDate>
+    <copyright>(C) 2026</copyright>
+    <license>GNU General Public License version 2 or later</license>
+    <version>1.0.7</version>
+    <description>COM_UPDATEMONITOR_XML_DESCRIPTION</description>
+    <namespace path="src">Custom\Component\UpdateMonitor</namespace>
+    <install><sql><file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file></sql></install>
+    <uninstall><sql><file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file></sql></uninstall>
+    <administration>
+        <menu link="option=com_updatemonitor">COM_UPDATEMONITOR</menu>
+        <files folder="admin">
+            <filename>config.xml</filename>
+            <filename>access.xml</filename>
+            <folder>services</folder>
+            <folder>sql</folder>
+            <folder>src</folder>
+            <folder>tmpl</folder>
+        </files>
+        <languages folder="admin/language">
+            <language tag="en-GB">en-GB/com_updatemonitor.ini</language>
+            <language tag="en-GB">en-GB/com_updatemonitor.sys.ini</language>
+            <language tag="de-DE">de-DE/com_updatemonitor.ini</language>
+            <language tag="de-DE">de-DE/com_updatemonitor.sys.ini</language>
+        </languages>
+    </administration>
+</extension>
