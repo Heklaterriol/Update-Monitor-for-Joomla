@@ -1,8 +1,11 @@
 # Update Monitor for Joomla
 
-Update Monitor for Joomla automatically checks for available updates of **Joomla Core**, **installed extensions** and **language packs**. When new updates are detected it can notify one or more recipients by email.
+At a time when security vulnerabilities are occurring with increasing frequency and immediate action is required, this extension provides relevant support.
+It expands upon the capabilities offered by Joomla: it automatically checks for available updates of all the installed software components Joomla Core, extensions and language packages.
+Checks are performed automatically at an interval that you can define in the settings, or they can be triggered manually whenever needed.
+If a new update is detected, an email with detailed information can be sent to the super administrators or to specific recipients.
 
-Security-related extension updates are identified and highlighted when the extension developer provides the corresponding security metadata. Severity levels (Low, Medium, High, Critical) are shown in the dashboard, the update list and in notification emails.
+In addition, security-critical extension updates are identified and highlighted, provided that the extension developer has supplied the relevant security metadata. The severity levels (Low, Medium, High, Critical) are displayed in the dashboard, in the list of updates, and in notification emails.
 
 Every detected update is stored in a history, so you can see when it was first detected, when it was resolved and when notifications were sent.
 
@@ -12,15 +15,15 @@ Every detected update is stored in a history, so you can see when it was first d
 
 ## Features
 
-- Automatic update checks using **Joomla Scheduled Tasks**
+- Automatically checks for Updated using Joomla built in **Joomla Scheduled Tasks**
 - Email notifications for newly available updates
 - Additional notification when the **security severity of an existing update increases**
 - **Dashboard** with update overview, a dedicated Joomla Core card and recent activity
 - **Update history** with detection and resolution tracking
 - **Ignore** individual updates
 - **Activity log** for update checks, notifications, reminders, reports and cleanups (can be cleared manually)
-- **Update server overview**
-- Configurable **reminders** for pending updates
+- **Update server overview** similar to the one natively provided by Joomla
+- Configurable Email **reminders** for pending updates
 - **Weekly and monthly status reports** by email
 - Automatic **cleanup** with configurable retention periods
 - Protection against duplicate notifications and overlapping checks
