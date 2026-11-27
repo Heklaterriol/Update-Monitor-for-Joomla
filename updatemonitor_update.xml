@@ -19,6 +19,6 @@
         <maintainerurl>https://github.com/Heklaterriol</maintainerurl>
         <targetplatform name="joomla" version="((5\.[0-9]+)|(6\.[0-9]+))"/>
         <php_minimum>8.1</php_minimum>
-        <sha256>8b1800d49a5e766a43406b06ead31b7e374bb53a63e495d74e6c049375f9d2fd</sha256>
+        <sha256>9cfe1b05d4653e39ba83497d5b59227139f59fe63fdddfee3fe04acefc231e03</sha256>
     </update>
 </updates>
