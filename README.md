@@ -284,7 +284,7 @@ updatemonitor_update.xml      Joomla update server file
 updatemonitor_changelog.xml   changelog
 ```
 
-Build the installable package with `tools/build.sh` (requires `bash`, `zip`, `sha256sum`).
+Build the installable package with `tools/build.sh` (requires `bash`, `zip` and `sha256sum` or `shasum`; works on Linux and macOS). Do not use Finder's "Compress" on macOS, it adds `__MACOSX` folders and can change the structure.
 
 PHP namespaces: `Custom\Component\UpdateMonitor` and `Custom\Plugin\Task\UpdateMonitor`. Adjust them (and the author/copyright in the manifests) to your own vendor name before publishing.
 
