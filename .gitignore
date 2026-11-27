@@ -1,1 +1,3 @@
-tools/build.sh
+build/
+dist/
+tools/build-ht.sh
