@@ -2,6 +2,7 @@
 \defined('_JEXEC') or die;
 
 use Custom\Component\UpdateMonitor\Administrator\Service\Severity;
+use Custom\Component\UpdateMonitor\Administrator\Service\VersionJump;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
@@ -26,7 +27,7 @@ $d = static fn ($v) => $v ? HTMLHelper::_('date', $v, Text::_('DATE_FORMAT_LC5')
     <?php foreach ($this->items as $r) : ?>
         <tr>
             <td><?php echo $e($r->name); ?></td><td><?php echo $e($r->type_label); ?></td>
-            <td><?php echo $e($r->installed_version); ?></td><td><?php echo $e($r->available_version); ?></td>
+            <td><?php echo $e($r->installed_version); ?></td><td><?php echo $e($r->available_version); ?> <?php echo VersionJump::badge(VersionJump::type($r->installed_version, $r->available_version)); ?></td>
             <td><?php echo Severity::badge($r->severity); ?></td>
             <td><?php echo $r->status === 'resolved' ? '<span class="badge bg-success">' . Text::_('COM_UPDATEMONITOR_STATUS_RESOLVED') . '</span> <small class="text-muted">' . $e($r->resolve_reason) . '</small>' : ($r->ignored ? '<span class="badge bg-secondary">' . Text::_('COM_UPDATEMONITOR_STATUS_IGNORED') . '</span>' : '<span class="badge bg-warning text-dark">' . Text::_('COM_UPDATEMONITOR_STATUS_PENDING') . '</span>'); ?></td>
             <td><?php echo $d($r->first_detected); ?></td><td><?php echo $d($r->resolved_at); ?></td>

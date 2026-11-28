@@ -71,6 +71,24 @@ class ActionController extends BaseController
         $this->back('default', $text, $type);
     }
 
+    public function testchannels(): void
+    {
+        $this->guard();
+        $res = Monitor::create()->notifier()->testChannels();
+
+        if (!$res) {
+            $this->back('default', Text::_('COM_UPDATEMONITOR_MSG_TESTCHAN_NONE'), 'warning');
+
+            return;
+        }
+
+        $ok   = array_keys(array_filter($res));
+        $fail = array_keys(array_filter($res, static fn ($v) => !$v));
+        $msg  = $ok ? Text::sprintf('COM_UPDATEMONITOR_MSG_TESTCHAN_OK', implode(', ', $ok)) : '';
+        $msg .= $fail ? ' ' . Text::sprintf('COM_UPDATEMONITOR_MSG_TESTCHAN_FAIL', implode(', ', $fail)) : '';
+        $this->back('default', trim($msg), $fail ? 'warning' : 'message');
+    }
+
     public function testmail(): void
     {
         $this->guard();

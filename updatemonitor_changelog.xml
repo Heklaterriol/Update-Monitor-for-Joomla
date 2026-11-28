@@ -3,7 +3,75 @@
     <changelog>
         <element>pkg_updatemonitor</element>
         <type>package</type>
-        <version>1.0.8</version>
+        <version>1.4.0</version>
+        <security/>
+        <fix/>
+        <language/>
+        <addition>
+            <item>Channels: notifications to Slack, Microsoft Teams (Workflows), Discord, Telegram and a generic JSON webhook with optional HMAC signature; selectable events and a test button.</item>
+            <item>Administrator dashboard module with core status, update counts, security findings and health warning.</item>
+        </addition>
+        <change>
+            <item>Webhook URLs and tokens are masked in the options and never logged; chat messages neutralise mentions from untrusted extension names.</item>
+        </change>
+        <remove/>
+        <note/>
+    </changelog>
+    <changelog>
+        <element>pkg_updatemonitor</element>
+        <type>package</type>
+        <version>1.3.0</version>
+        <security/>
+        <fix/>
+        <language/>
+        <addition>
+            <item>Statistics tab: time to fix per severity (median, average, longest, share within target), open updates and their age, oldest open updates, last 6 months.</item>
+            <item>Remediation targets in days per severity; overdue updates are marked in the update list.</item>
+            <item>Version jump (major, minor, patch) next to the available version on the dashboard, in the update list, in the history and in emails.</item>
+            <item>Median time to fix on the dashboard and in weekly and monthly reports.</item>
+        </addition>
+        <change/>
+        <remove/>
+        <note/>
+    </changelog>
+    <changelog>
+        <element>pkg_updatemonitor</element>
+        <type>package</type>
+        <version>1.2.0</version>
+        <security/>
+        <fix/>
+        <language/>
+        <addition>
+            <item>Dashboard banner when scheduled checks stop running, with likely causes (disabled plugin or task, missing task, scheduler not triggered, stuck task, last run failed).</item>
+        </addition>
+        <change>
+            <item>Only checks started by the Scheduled Tasks plugin count for this warning; manual checks and the check on opening the component do not hide a broken cron job.</item>
+        </change>
+        <remove/>
+        <note/>
+    </changelog>
+    <changelog>
+        <element>pkg_updatemonitor</element>
+        <type>package</type>
+        <version>1.1.0</version>
+        <security/>
+        <fix/>
+        <language/>
+        <addition>
+            <item>Security checks tab: installed extensions are compared with the Joomla Vulnerable Extensions List (also when no update exists).</item>
+            <item>End-of-life check for PHP, the database server and Joomla.</item>
+            <item>Blind spots: extensions without update server, with a disabled update server or with a server that was not checked recently.</item>
+            <item>Disabled extensions that have a pending update are reported.</item>
+            <item>Email about new vulnerable-extension and end-of-life findings; red dashboard banner for vulnerable extensions.</item>
+        </addition>
+        <change/>
+        <remove/>
+        <note/>
+    </changelog>
+    <changelog>
+        <element>pkg_updatemonitor</element>
+        <type>package</type>
+        <version>1.0.7</version>
         <security/>
         <fix/>
         <language/>

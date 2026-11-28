@@ -14,6 +14,9 @@
         <field name="debug_log" type="radio" layout="joomla.form.field.radio.switcher" default="0" label="COM_UPDATEMONITOR_CFG_DEBUG" description="COM_UPDATEMONITOR_CFG_DEBUG_DESC">
             <option value="0">JNO</option><option value="1">JYES</option>
         </field>
+        <field name="warn_missing_checks" type="radio" layout="joomla.form.field.radio.switcher" default="1" label="COM_UPDATEMONITOR_CFG_WARN_MISSING" description="COM_UPDATEMONITOR_CFG_WARN_MISSING_DESC">
+            <option value="0">JNO</option><option value="1">JYES</option>
+        </field>
         <field name="max_check_age_hours" type="number" default="48" min="1" label="COM_UPDATEMONITOR_CFG_MAXAGE" description="COM_UPDATEMONITOR_CFG_MAXAGE_DESC" />
     </fieldset>
     <fieldset name="notifications" label="COM_UPDATEMONITOR_CFG_NOTIFICATIONS">
@@ -35,6 +38,24 @@
         </field>
         <field name="reminder_days" type="number" default="7" min="0" label="COM_UPDATEMONITOR_CFG_REMINDER" description="COM_UPDATEMONITOR_CFG_REMINDER_DESC" />
     </fieldset>
+    <fieldset name="channels" label="COM_UPDATEMONITOR_CFG_CHANNELS" description="COM_UPDATEMONITOR_CFG_CHANNELS_DESC">
+        <field name="chan_events" type="checkboxes" default="updates,findings" label="COM_UPDATEMONITOR_CFG_CHAN_EVENTS">
+            <option value="updates">COM_UPDATEMONITOR_CFG_EVENT_UPDATES</option>
+            <option value="findings">COM_UPDATEMONITOR_CFG_EVENT_FINDINGS</option>
+            <option value="reminders">COM_UPDATEMONITOR_CFG_EVENT_REMINDERS</option>
+            <option value="reports">COM_UPDATEMONITOR_CFG_EVENT_REPORTS</option>
+        </field>
+        <field name="chan_slack_url" type="password" autocomplete="off" label="COM_UPDATEMONITOR_CFG_CHAN_SLACK" description="COM_UPDATEMONITOR_CFG_CHAN_URL_DESC" />
+        <field name="chan_teams_url" type="password" autocomplete="off" label="COM_UPDATEMONITOR_CFG_CHAN_TEAMS" description="COM_UPDATEMONITOR_CFG_CHAN_URL_DESC" />
+        <field name="chan_discord_url" type="password" autocomplete="off" label="COM_UPDATEMONITOR_CFG_CHAN_DISCORD" description="COM_UPDATEMONITOR_CFG_CHAN_URL_DESC" />
+        <field name="chan_telegram_token" type="password" autocomplete="off" label="COM_UPDATEMONITOR_CFG_CHAN_TG_TOKEN" description="COM_UPDATEMONITOR_CFG_CHAN_URL_DESC" />
+        <field name="chan_telegram_chat" type="text" label="COM_UPDATEMONITOR_CFG_CHAN_TG_CHAT" description="COM_UPDATEMONITOR_CFG_CHAN_TG_CHAT_DESC" />
+        <field name="chan_webhook_url" type="password" autocomplete="off" label="COM_UPDATEMONITOR_CFG_CHAN_WEBHOOK" description="COM_UPDATEMONITOR_CFG_CHAN_WEBHOOK_DESC" />
+        <field name="chan_webhook_secret" type="password" autocomplete="off" label="COM_UPDATEMONITOR_CFG_CHAN_SECRET" description="COM_UPDATEMONITOR_CFG_CHAN_SECRET_DESC" />
+        <field name="chan_webhook_private" type="radio" layout="joomla.form.field.radio.switcher" default="0" label="COM_UPDATEMONITOR_CFG_CHAN_PRIVATE" description="COM_UPDATEMONITOR_CFG_CHAN_PRIVATE_DESC">
+            <option value="0">JNO</option><option value="1">JYES</option>
+        </field>
+    </fieldset>
     <fieldset name="reports" label="COM_UPDATEMONITOR_CFG_REPORTS">
         <field name="report_weekly" type="radio" layout="joomla.form.field.radio.switcher" default="0" label="COM_UPDATEMONITOR_CFG_WEEKLY">
             <option value="0">JNO</option><option value="1">JYES</option>
@@ -54,6 +75,13 @@
         </field>
         <field name="log_retention_days" type="number" default="90" min="1" label="COM_UPDATEMONITOR_CFG_LOGDAYS" />
         <field name="history_retention_days" type="number" default="365" min="0" label="COM_UPDATEMONITOR_CFG_HISTDAYS" description="COM_UPDATEMONITOR_CFG_HISTDAYS_DESC" />
+    </fieldset>
+    <fieldset name="targets" label="COM_UPDATEMONITOR_CFG_SLA" description="COM_UPDATEMONITOR_CFG_SLA_DESC">
+        <field name="sla_critical" type="number" default="2" min="0" label="COM_UPDATEMONITOR_CFG_SLA_CRITICAL" />
+        <field name="sla_high" type="number" default="7" min="0" label="COM_UPDATEMONITOR_CFG_SLA_HIGH" />
+        <field name="sla_medium" type="number" default="30" min="0" label="COM_UPDATEMONITOR_CFG_SLA_MEDIUM" />
+        <field name="sla_low" type="number" default="90" min="0" label="COM_UPDATEMONITOR_CFG_SLA_LOW" />
+        <field name="sla_other" type="number" default="60" min="0" label="COM_UPDATEMONITOR_CFG_SLA_OTHER" />
     </fieldset>
     <fieldset name="securitychecks" label="COM_UPDATEMONITOR_CFG_SECURITY">
         <field name="check_vel" type="radio" layout="joomla.form.field.radio.switcher" default="1" label="COM_UPDATEMONITOR_CFG_CHECK_VEL" description="COM_UPDATEMONITOR_CFG_CHECK_VEL_DESC">

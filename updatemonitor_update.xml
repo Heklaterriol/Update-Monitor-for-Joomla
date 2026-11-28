@@ -5,12 +5,12 @@
         <description>Watches Joomla, your extensions and your language packs for new versions, keeps a history and notifies administrators by email. Installs nothing itself.</description>
         <element>pkg_updatemonitor</element>
         <type>package</type>
-        <version>1.0.8</version>
+        <version>1.4.0</version>
         <client>site</client>
         <infourl title="Update Monitor for Joomla">https://github.com/Heklaterriol/Update-Monitor-for-Joomla</infourl>
         <changelogurl>https://raw.githubusercontent.com/Heklaterriol/Update-Monitor-for-Joomla/main/updatemonitor_changelog.xml</changelogurl>
         <downloads>
-            <downloadurl type="full" format="zip">https://github.com/Heklaterriol/Update-Monitor-for-Joomla/releases/download/v1.0.8/pkg_updatemonitor.zip</downloadurl>
+            <downloadurl type="full" format="zip">https://github.com/Heklaterriol/Update-Monitor-for-Joomla/releases/download/v1.4.0/pkg_updatemonitor.zip</downloadurl>
         </downloads>
         <tags>
             <tag>stable</tag>
@@ -19,6 +19,6 @@
         <maintainerurl>https://github.com/Heklaterriol</maintainerurl>
         <targetplatform name="joomla" version="((5\.[0-9]+)|(6\.[0-9]+))"/>
         <php_minimum>8.1</php_minimum>
-        <sha256>47037676a05136bf6a1c5342647d7ebab88790dfdc6ad215453f3fd4bd0b247e</sha256>
+        <sha256>85de21b5676d9cefbafd6511225991c28bb4827b79b61f7c6f10e80372c10dd2</sha256>
     </update>
 </updates>

@@ -118,6 +118,15 @@ final class Monitor
                 $this->store->setState('last_success', Store::now());
             }
 
+            if ($scheduled) {
+                $this->store->setState('last_scheduled_run', Store::now());
+                $this->store->setState('last_scheduled_ok', $ok ? '1' : '0');
+
+                if ($ok) {
+                    $this->store->setState('last_scheduled_success', Store::now());
+            }
+            }
+
             $this->store->log('check', sprintf(
                 'Check %s: %d update(s) available, %d new, %d resolved.',
                 $ok ? 'finished' : 'finished with errors',
@@ -158,6 +167,11 @@ final class Monitor
             $result = ['ok' => $ok, 'pending' => \count($current), 'message' => ''];
         } catch (\Throwable $e) {
             $this->store->log('check', 'Check failed: ' . $this->errorText($e), 'error');
+
+            if ($scheduled) {
+                $this->store->setState('last_scheduled_run', Store::now());
+                $this->store->setState('last_scheduled_ok', '0');
+            }
             $result['message'] = $e->getMessage();
         } finally {
             $this->store->setState('check_running', '');

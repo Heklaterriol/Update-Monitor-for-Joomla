@@ -78,7 +78,7 @@ final class Severity
     }
 
     /** SSRF guard: the host must resolve to public addresses only. */
-    private static function isPublicHost(string $url): bool
+    public static function isPublicHost(string $url): bool
     {
         $host = trim((string) parse_url($url, PHP_URL_HOST), '[]');
 

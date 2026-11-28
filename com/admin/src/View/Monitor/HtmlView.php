@@ -4,8 +4,10 @@ namespace Custom\Component\UpdateMonitor\Administrator\View\Monitor;
 
 \defined('_JEXEC') or die;
 
+use Custom\Component\UpdateMonitor\Administrator\Service\Health;
 use Custom\Component\UpdateMonitor\Administrator\Service\Monitor;
 use Custom\Component\UpdateMonitor\Administrator\Service\Severity;
+use Custom\Component\UpdateMonitor\Administrator\Service\Stats;
 use Custom\Component\UpdateMonitor\Administrator\Service\Store;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
@@ -18,6 +20,9 @@ class HtmlView extends BaseHtmlView
 {
     public ?object $core = null;
     public int $extCount = 0;
+    public ?array $health = null;
+    public array $statsData = [];
+    public int $period = 90;
     public array $findings = [];
     public string $findingsChecked = '';
     public array $stats = [];
@@ -58,6 +63,11 @@ class HtmlView extends BaseHtmlView
             case 'log':
                 $this->log = $db->setQuery('SELECT * FROM ' . $db->quoteName('#__updatemonitor_log') . ' ORDER BY id DESC', 0, 300)->loadObjectList();
                 break;
+            case 'stats':
+                $period       = $app->getInput()->getInt('period', 90);
+                $this->period = \in_array($period, [30, 90, 365, 0], true) ? $period : 90;
+                $this->statsData = (new Stats($db, ComponentHelper::getParams('com_updatemonitor')))->compute($this->period);
+                break;
             case 'security':
                 $store                = new Store($db);
                 $this->findings        = json_decode($store->getState('findings', '[]'), true) ?: [];
@@ -84,6 +94,14 @@ class HtmlView extends BaseHtmlView
     private function updates(DatabaseInterface $db, string $where, string $order = '', int $limit = 500): array
     {
         $rows = $db->setQuery('SELECT * FROM ' . $db->quoteName('#__updatemonitor_updates') . ' WHERE ' . $where . ($order ? ' ORDER BY ' . $order : ''), 0, $limit)->loadObjectList();
+
+        $stats = new Stats($db, ComponentHelper::getParams('com_updatemonitor'));
+
+        foreach ($rows as $r) {
+            $r->age_s    = max(0, time() - strtotime($r->first_detected . ' UTC'));
+            $r->target_d = $stats->targetDays((string) $r->severity);
+            $r->overdue  = $r->status === 'pending' && !(int) $r->ignored && $r->target_d > 0 && $r->age_s > $r->target_d * 86400;
+        }
 
         if ($order === '') {
             $core = static fn ($r) => $r->type_label === 'Joomla Core' ? 0 : 1;
@@ -116,7 +134,10 @@ class HtmlView extends BaseHtmlView
         $s['findings']  = \count($found);
         $s['vel']       = \count(array_filter($found, static fn ($f) => $f['kind'] === 'vel'));
         $s['installer_list'] = (int) $db->setQuery('SELECT COUNT(*) FROM ' . $db->quoteName('#__updates') . ' WHERE extension_id > 0')->loadResult();
+        $fixed          = (new Stats($db, ComponentHelper::getParams('com_updatemonitor')))->compute(90)['fixed']['all'];
+        $s['fix_median'] = $fixed['n'] ? Stats::human($fixed['median']) : '–';
         $this->stats = $s;
+        $this->health = $s['last_check'] !== '' ? (new Health($store, ComponentHelper::getParams('com_updatemonitor')))->evaluate() : null;
         $rest = [];
 
         foreach ($pending as $r) {

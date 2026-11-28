@@ -19,6 +19,7 @@ rm -rf build dist && mkdir -p build/pkg/packages dist
 
 (cd com && mkzip "$ROOT/build/pkg/packages/com_updatemonitor.zip")
 (cd plg && mkzip "$ROOT/build/pkg/packages/plg_task_updatemonitor.zip")
+(cd mod && mkzip "$ROOT/build/pkg/packages/mod_updatemonitor.zip")
 cp pkg/pkg_updatemonitor.xml pkg/script.php build/pkg/
 (cd build/pkg && mkzip "$ROOT/dist/pkg_updatemonitor.zip")
 

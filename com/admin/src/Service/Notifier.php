@@ -135,11 +135,87 @@ final class Notifier
 
             $td = '<td style="' . self::TD . '">';
             $h .= '<tr>' . $td . $name . '</td>' . $td . $this->e($r->type_label) . '</td>' . $td . $this->e($r->installed_version) . '</td>'
-                . $td . $this->e($r->available_version) . '</td>' . $td . Severity::emailBadge((string) $r->severity) . $info . '</td>'
+                . $td . $this->e($r->available_version) . ' ' . VersionJump::emailBadge(VersionJump::type((string) $r->installed_version, (string) $r->available_version)) . '</td>' . $td . Severity::emailBadge((string) $r->severity) . $info . '</td>'
                 . ($note ? $td . $this->e($it['note']) . '</td>' : '') . '</tr>';
         }
 
         return $h . '</tbody></table>';
+    }
+
+    private function channels(): Channels
+    {
+        return new Channels($this->store, $this->params);
+    }
+
+    private function updateUrl(): string
+    {
+        return $this->adminBase() . 'index.php?option=com_installer&view=update';
+    }
+
+    /** One plain-text line per update for chat channels. */
+    private function plainLine(object $r, string $note = ''): string
+    {
+        $jump = VersionJump::type((string) $r->installed_version, (string) $r->available_version);
+        $line = $r->name . ' (' . $r->type_label . ') ' . $r->installed_version . ' → ' . $r->available_version;
+
+        if ($jump !== '') {
+            $line .= ' [' . Text::_('COM_UPDATEMONITOR_JUMP_' . strtoupper($jump)) . ']';
+        }
+
+        if ((string) $r->severity !== '') {
+            $line .= ' · ' . Text::_('COM_UPDATEMONITOR_COL_SEVERITY') . ': ' . Severity::label((string) $r->severity);
+        }
+
+        return $note !== '' ? $line . ' · ' . $note : $line;
+    }
+
+    /** Core first, then the rest. @return array{title:string,lines:string[],severity:string,url:string,data:array} */
+    private function updatesMessage(string $title, array $items, array $extra = []): array
+    {
+        usort($items, static fn ($a, $b) => [$a['row']->type_label === 'Joomla Core' ? 0 : 1] <=> [$b['row']->type_label === 'Joomla Core' ? 0 : 1]);
+
+        $lines = $data = [];
+        $max   = '';
+
+        foreach ($items as $it) {
+            $r       = $it['row'];
+            $lines[] = $this->plainLine($r, $it['note']);
+            $max     = Severity::max($max, (string) $r->severity);
+            $data[]  = [
+                'name' => $r->name, 'type' => $r->type_label, 'installed' => $r->installed_version, 'available' => $r->available_version,
+                'jump' => VersionJump::type((string) $r->installed_version, (string) $r->available_version), 'severity' => (string) $r->severity, 'note' => $it['note'],
+            ];
+        }
+
+        return ['title' => $title, 'lines' => array_merge($lines, $extra), 'severity' => $max, 'url' => $this->updateUrl(), 'data' => $data];
+    }
+
+    /** Chat title with the highest severity as prefix. */
+    private function chatTitle(string $title, string $severity): string
+    {
+        return ($severity !== '' ? Text::sprintf('COM_UPDATEMONITOR_MAIL_SECURITY_PREFIX', strtoupper(Severity::label($severity))) . ' ' : '') . $title;
+    }
+
+    /** Test message for the channels (see Monitor). */
+    public function testChannels(): array
+    {
+        $channels = $this->channels();
+
+        if (!$channels->configured()) {
+            return [];
+        }
+
+        $res = $channels->test([
+            'title' => Text::sprintf('COM_UPDATEMONITOR_CHAN_TEST_TITLE', $this->site()),
+            'lines' => [Text::_('COM_UPDATEMONITOR_CHAN_TEST_BODY')],
+            'severity' => '',
+            'url' => $this->adminBase() . 'index.php?option=com_updatemonitor',
+            'data' => [],
+        ]);
+
+        $this->store->log('notification', 'Channel test message: ' . json_encode($res));
+
+        return $res;
     }
 
     private function openNote(object $r): string
@@ -180,6 +256,17 @@ final class Notifier
         }
 
         return $h;
+    }
+
+    private function maxSeverity(array $items): string
+    {
+        $max = '';
+
+        foreach ($items as $it) {
+            $max = Severity::max($max, (string) $it['row']->severity);
+        }
+
+        return $max;
     }
 
     private function subjectPrefix(array $items): string
@@ -232,8 +319,9 @@ final class Notifier
         }
 
         $recipients = $this->recipients();
+        $channels   = $this->channels();
 
-        if (!$recipients) {
+        if (!$recipients && !$channels->active('updates')) {
             $this->store->log('notification', 'No recipients configured / no Super User with "Receive System Emails".', 'warning');
 
             return 0;
@@ -258,7 +346,12 @@ final class Notifier
             . $this->e(Text::sprintf('COM_UPDATEMONITOR_MAIL_TOTAL_OPEN', \count($items) + \count($open))) . '</p>'
             . $this->sections($items, $open)
         );
-        $sent    = $this->send($recipients, $subject, $body);
+        $sent    = $this->send($recipients, $subject, $body)
+            + $channels->send('updates', $this->updatesMessage(
+                $this->chatTitle(Text::sprintf('COM_UPDATEMONITOR_MAIL_SUBJECT_NEW', $this->site(), \count($items)), $this->maxSeverity($items)),
+                array_merge($items, $open),
+                [Text::sprintf('COM_UPDATEMONITOR_MAIL_TOTAL_OPEN', \count($items) + \count($open))]
+            ));
 
         if ($sent === 0) {
             foreach ($orig as $o) {
@@ -293,8 +386,9 @@ final class Notifier
         }
 
         $recipients = $this->recipients();
+        $channels   = $this->channels();
 
-        if (!$recipients) {
+        if (!$recipients && !$channels->active('findings')) {
             $this->store->log('notification', 'No recipients for security findings.', 'warning');
 
             return 0;
@@ -312,7 +406,14 @@ final class Notifier
         $prefix  = $max !== '' ? Text::sprintf('COM_UPDATEMONITOR_MAIL_SECURITY_PREFIX', strtoupper(Severity::label($max))) . ' ' : '';
         $subject = $prefix . Text::sprintf('COM_UPDATEMONITOR_MAIL_SUBJECT_FINDINGS', $this->site(), \count($new));
         $body    = $this->wrap('<p>' . $this->e(Text::sprintf('COM_UPDATEMONITOR_MAIL_INTRO_FINDINGS', $this->site())) . '</p>' . $this->findingsTable($new));
-        $sent    = $this->send($recipients, $subject, $body);
+        $sent    = $this->send($recipients, $subject, $body)
+            + $channels->send('findings', [
+                'title'    => $this->chatTitle(Text::sprintf('COM_UPDATEMONITOR_MAIL_SUBJECT_FINDINGS', $this->site(), \count($new)), $max),
+                'lines'    => array_map(static fn ($f) => '[' . Severity::label((string) $f['severity']) . '] ' . $f['title'] . ' – ' . $f['detail'], $new),
+                'severity' => $max,
+                'url'      => $this->adminBase() . 'index.php?option=com_updatemonitor&view=monitor&layout=security',
+                'data'     => $new,
+            ]);
 
         if ($sent === 0) {
             $this->store->setState('findings_notified', (string) json_encode($keep));
@@ -361,8 +462,9 @@ final class Notifier
         }
 
         $recipients = $this->recipients();
+        $channels   = $this->channels();
 
-        if (!$items || !$recipients) {
+        if (!$items || (!$recipients && !$channels->active('reminders'))) {
             return 0;
         }
 
@@ -377,7 +479,11 @@ final class Notifier
 
         $subject = $this->subjectPrefix($all) . Text::sprintf('COM_UPDATEMONITOR_MAIL_SUBJECT_REMINDER', $this->site(), \count($all));
         $body    = $this->wrap('<p>' . $this->e(Text::sprintf('COM_UPDATEMONITOR_MAIL_INTRO_REMINDER', $this->site(), \count($all))) . '</p>' . $this->sections([], $all));
-        $sent    = $this->send($recipients, $subject, $body);
+        $sent    = $this->send($recipients, $subject, $body)
+            + $channels->send('reminders', $this->updatesMessage(
+                $this->chatTitle(Text::sprintf('COM_UPDATEMONITOR_MAIL_SUBJECT_REMINDER', $this->site(), \count($all)), $this->maxSeverity($all)),
+                $all
+            ));
         $this->store->log('reminder', sprintf('Reminder for %d pending update(s) sent to %d recipient(s).', \count($items), $sent), $sent ? 'info' : 'error');
 
         return $sent;
@@ -412,8 +518,9 @@ final class Notifier
     public function sendReport(string $period): int
     {
         $recipients = $this->recipients();
+        $channels   = $this->channels();
 
-        if (!$recipients) {
+        if (!$recipients && !$channels->active('reports')) {
             return 0;
         }
 
@@ -428,6 +535,7 @@ final class Notifier
 
         $pending = $this->pending();
         $ignored = \count($this->pending(true));
+        $fix     = (new Stats($db, $this->params))->compute($period === 'weekly' ? 7 : 30)['fixed']['all'];
         $items   = array_map(fn ($r) => ['row' => $r, 'note' => $this->openNote($r)], $pending);
 
         $bySev = ['critical' => 0, 'high' => 0, 'medium' => 0, 'low' => 0, 'unknown' => 0];
@@ -450,11 +558,25 @@ final class Notifier
             . '<li>' . $this->e(Text::_('COM_UPDATEMONITOR_MAIL_REPORT_PENDING')) . ': <strong>' . \count($pending) . '</strong>' . ($sevLine ? ' (' . $this->e(implode(', ', $sevLine)) . ')' : '') . '</li>'
             . '<li>' . $this->e(Text::_('COM_UPDATEMONITOR_MAIL_REPORT_NEW')) . ': ' . $count('first_detected') . '</li>'
             . '<li>' . $this->e(Text::_('COM_UPDATEMONITOR_MAIL_REPORT_RESOLVED')) . ': ' . $count('resolved_at') . '</li>'
-            . '<li>' . $this->e(Text::_('COM_UPDATEMONITOR_MAIL_REPORT_IGNORED')) . ': ' . $ignored . '</li></ul>'
+            . '<li>' . $this->e(Text::_('COM_UPDATEMONITOR_MAIL_REPORT_IGNORED')) . ': ' . $ignored . '</li>'
+            . '<li>' . $this->e(Text::_('COM_UPDATEMONITOR_MAIL_REPORT_FIXTIME')) . ': ' . $this->e($fix['n'] ? Stats::human($fix['median']) . ' (' . $fix['n'] . ')' : '–') . '</li></ul>'
             . $this->sections([], $items);
 
         $subject = $this->subjectPrefix($items) . Text::sprintf('COM_UPDATEMONITOR_MAIL_SUBJECT_REPORT_' . strtoupper($period), $this->site());
-        $sent    = $this->send($recipients, $subject, $this->wrap($html));
+        $sent    = $this->send($recipients, $subject, $this->wrap($html))
+            + $channels->send('reports', [
+                'title'    => $this->chatTitle(Text::sprintf('COM_UPDATEMONITOR_MAIL_SUBJECT_REPORT_' . strtoupper($period), $this->site()), $this->maxSeverity($items)),
+                'lines'    => array_merge([
+                    Text::_('COM_UPDATEMONITOR_MAIL_REPORT_PENDING') . ': ' . \count($pending) . ($sevLine ? ' (' . implode(', ', $sevLine) . ')' : ''),
+                    Text::_('COM_UPDATEMONITOR_MAIL_REPORT_NEW') . ': ' . $count('first_detected'),
+                    Text::_('COM_UPDATEMONITOR_MAIL_REPORT_RESOLVED') . ': ' . $count('resolved_at'),
+                    Text::_('COM_UPDATEMONITOR_MAIL_REPORT_IGNORED') . ': ' . $ignored,
+                    Text::_('COM_UPDATEMONITOR_MAIL_REPORT_FIXTIME') . ': ' . ($fix['n'] ? Stats::human($fix['median']) . ' (' . $fix['n'] . ')' : '–'),
+                ], array_map(fn ($i) => $this->plainLine($i['row'], $i['note']), $items)),
+                'severity' => $this->maxSeverity($items),
+                'url'      => $this->updateUrl(),
+                'data'     => [],
+            ]);
         $this->store->log('report', sprintf('%s report sent to %d recipient(s).', ucfirst($period), $sent), $sent ? 'info' : 'error');
 
         return $sent;
