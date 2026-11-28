@@ -126,9 +126,22 @@ final class Monitor
                 $stats['resolved']
             ), $ok ? 'info' : 'warning');
 
+            // Security findings that do not depend on a pending update (VEL, end of life, blind spots)
+            $findings = [];
+
+            try {
+                $findings = (new Findings($this->store, $this->params))->collect();
+                $this->store->setState('findings', (string) json_encode(\array_slice($findings, 0, 300), JSON_UNESCAPED_UNICODE));
+                $this->store->setState('findings_checked', Store::now());
+                $this->store->log('security', sprintf('Security checks finished: %d finding(s).', \count($findings)));
+            } catch (\Throwable $e) {
+                $this->store->log('security', 'Security checks failed: ' . $this->errorText($e), 'warning');
+            }
+
             // Mails only after a successful, current check and only if enabled for this trigger
             if ($ok && $sendMail) {
                 $this->notifier->notifyChanges();
+                $this->notifier->notifyFindings($findings);
 
                 if ($scheduled && $this->checkIsFresh()) {
                     $this->notifier->remind();

@@ -18,6 +18,8 @@ class HtmlView extends BaseHtmlView
 {
     public ?object $core = null;
     public int $extCount = 0;
+    public array $findings = [];
+    public string $findingsChecked = '';
     public array $stats = [];
     public array $items = [];
     public array $log = [];
@@ -55,6 +57,11 @@ class HtmlView extends BaseHtmlView
                 break;
             case 'log':
                 $this->log = $db->setQuery('SELECT * FROM ' . $db->quoteName('#__updatemonitor_log') . ' ORDER BY id DESC', 0, 300)->loadObjectList();
+                break;
+            case 'security':
+                $store                = new Store($db);
+                $this->findings        = json_decode($store->getState('findings', '[]'), true) ?: [];
+                $this->findingsChecked = $store->getState('findings_checked');
                 break;
             case 'servers':
                 $this->servers = $this->servers($db);
@@ -105,6 +112,9 @@ class HtmlView extends BaseHtmlView
         $s['last_check']   = $store->getState('last_check');
         $s['last_success'] = $store->getState('last_success');
 
+        $found          = json_decode($store->getState('findings', '[]'), true) ?: [];
+        $s['findings']  = \count($found);
+        $s['vel']       = \count(array_filter($found, static fn ($f) => $f['kind'] === 'vel'));
         $s['installer_list'] = (int) $db->setQuery('SELECT COUNT(*) FROM ' . $db->quoteName('#__updates') . ' WHERE extension_id > 0')->loadResult();
         $this->stats = $s;
         $rest = [];

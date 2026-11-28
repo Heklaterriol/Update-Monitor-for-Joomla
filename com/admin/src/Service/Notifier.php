@@ -271,6 +271,76 @@ final class Notifier
         return $sent;
     }
 
+    /** Mail about NEW vulnerable-extension and end-of-life findings (once per finding). */
+    public function notifyFindings(array $findings): int
+    {
+        if (!$this->params->get('notify_findings', 1)) {
+            return 0;
+        }
+
+        $current     = array_values(array_filter($findings, static fn ($f) => \in_array($f['kind'], ['vel', 'eol'], true)));
+        $currentKeys = array_map(static fn ($f) => $f['key'], $current);
+        $known       = json_decode($this->store->getState('findings_notified', '[]'), true) ?: [];
+        $keep        = array_values(array_intersect($known, $currentKeys));
+        $new         = array_values(array_filter($current, static fn ($f) => !\in_array($f['key'], $known, true)));
+
+        if (!$new) {
+            if ($keep !== $known) {
+                $this->store->setState('findings_notified', (string) json_encode($keep));
+            }
+
+            return 0;
+        }
+
+        $recipients = $this->recipients();
+
+        if (!$recipients) {
+            $this->store->log('notification', 'No recipients for security findings.', 'warning');
+
+            return 0;
+        }
+
+        // claim first (no duplicate mails), revert if nothing could be sent
+        $this->store->setState('findings_notified', (string) json_encode(array_values(array_unique(array_merge($keep, array_map(static fn ($f) => $f['key'], $new))))));
+
+        $max = '';
+
+        foreach ($new as $f) {
+            $max = Severity::max($max, $f['severity']);
+        }
+
+        $prefix  = $max !== '' ? Text::sprintf('COM_UPDATEMONITOR_MAIL_SECURITY_PREFIX', strtoupper(Severity::label($max))) . ' ' : '';
+        $subject = $prefix . Text::sprintf('COM_UPDATEMONITOR_MAIL_SUBJECT_FINDINGS', $this->site(), \count($new));
+        $body    = $this->wrap('<p>' . $this->e(Text::sprintf('COM_UPDATEMONITOR_MAIL_INTRO_FINDINGS', $this->site())) . '</p>' . $this->findingsTable($new));
+        $sent    = $this->send($recipients, $subject, $body);
+
+        if ($sent === 0) {
+            $this->store->setState('findings_notified', (string) json_encode($keep));
+        }
+
+        $this->store->log('notification', sprintf('Security findings (%d new) sent to %d of %d recipient(s).', \count($new), $sent, \count($recipients)), $sent ? 'info' : 'error');
+
+        return $sent;
+    }
+
+    /** @param array<int,array<string,string>> $findings */
+    private function findingsTable(array $findings): string
+    {
+        $th = static fn (string $k) => '<th style="' . self::TD . 'background:#f0f0f0">' . htmlspecialchars(Text::_($k), ENT_QUOTES, 'UTF-8') . '</th>';
+        $h  = '<table style="border-collapse:collapse;font-size:14px"><thead><tr>'
+            . $th('COM_UPDATEMONITOR_COL_SEVERITY') . $th('COM_UPDATEMONITOR_MAIL_COL_FINDING') . $th('COM_UPDATEMONITOR_MAIL_COL_DETAILS')
+            . '</tr></thead><tbody>';
+
+        foreach ($findings as $f) {
+            $td    = '<td style="' . self::TD . '">';
+            $link  = Severity::safeUrl((string) $f['url']);
+            $title = $link !== '' ? '<a href="' . $this->e($link) . '">' . $this->e($f['title']) . '</a>' : $this->e($f['title']);
+            $h    .= '<tr>' . $td . Severity::emailBadge((string) $f['severity']) . '</td>' . $td . $title . '</td>' . $td . $this->e($f['detail']) . '</td></tr>';
+        }
+
+        return $h . '</tbody></table>';
+    }
+
     public function remind(): int
     {
         $days = (int) $this->params->get('reminder_days', 7);

@@ -5,7 +5,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 
-$tabs = ['default' => 'DASHBOARD', 'updates' => 'UPDATES', 'history' => 'HISTORY', 'log' => 'LOG', 'servers' => 'SERVERS'];
+$tabs = ['default' => 'DASHBOARD', 'updates' => 'UPDATES', 'security' => 'SECURITY', 'history' => 'HISTORY', 'log' => 'LOG', 'servers' => 'SERVERS'];
 $cur  = $this->getLayout();
 ?>
 <ul class="nav nav-tabs mb-3">

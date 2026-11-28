@@ -111,8 +111,8 @@ final class Severity
         return true;
     }
 
-    /** GET with manual redirect handling so that every hop is validated (max 3 redirects, max 1 MB). */
-    private static function download(string $url): ?string
+    /** GET with manual redirect handling so that every hop is validated (max 3 redirects, size and time limited). */
+    public static function download(string $url, int $maxBytes = 1048576, int $timeout = 10): ?string
     {
         $http = HttpFactory::getHttp(['follow_location' => false]);
 
@@ -123,7 +123,7 @@ final class Severity
                 return null;
             }
 
-            $response = $http->get($url, [], 10);
+            $response = $http->get($url, [], $timeout);
             $code     = $response->getStatusCode();
 
             if (\in_array($code, [301, 302, 303, 307, 308], true)) {
@@ -139,7 +139,7 @@ final class Severity
 
             $body = (string) $response->getBody();
 
-            return ($code === 200 && $body !== '' && \strlen($body) <= 1048576) ? $body : null;
+            return ($code === 200 && $body !== '' && \strlen($body) <= $maxBytes) ? $body : null;
         }
 
         return null;

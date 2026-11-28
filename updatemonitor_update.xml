@@ -2,7 +2,7 @@
 <updates>
     <update>
         <name>Update Monitor for Joomla</name>
-        <description>Monitors available updates for Joomla, extensions and language packs, tracks their history and notifies administrators. Does not install updates.</description>
+        <description>Watches Joomla, your extensions and your language packs for new versions, keeps a history and notifies administrators by email. Installs nothing itself.</description>
         <element>pkg_updatemonitor</element>
         <type>package</type>
         <version>1.0.8</version>

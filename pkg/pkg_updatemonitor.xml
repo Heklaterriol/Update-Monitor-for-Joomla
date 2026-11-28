@@ -6,8 +6,8 @@
     <creationDate>2026-11</creationDate>
     <copyright>(C) 2026</copyright>
     <license>GNU General Public License version 2 or later</license>
-    <version>1.0.8</version>
-    <description>Monitors Joomla, extension and language pack updates, tracks history and sends notifications. Does not install updates.</description>
+    <version>1.1.0</version>
+    <description>Watches Joomla, your extensions and your language packs for new versions, keeps a history and sends notifications. Installs nothing itself.</description>
     <scriptfile>script.php</scriptfile>
     <updateservers>
         <server type="extension" priority="1" name="Update Monitor for Joomla">https://raw.githubusercontent.com/Heklaterriol/Update-Monitor-for-Joomla/main/updatemonitor_update.xml</server>

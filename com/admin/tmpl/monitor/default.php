@@ -46,9 +46,17 @@ $card = static fn (string $label, $value, string $cls = '') => '<div class="col-
     <div class="alert alert-success d-flex align-items-center mb-4"><?php echo Text::sprintf('COM_UPDATEMONITOR_CORE_UP_TO_DATE', $e(JVERSION)); ?></div>
 <?php endif; ?>
 
+<?php if (!empty($s['vel'])) : ?>
+    <div class="alert alert-danger d-flex flex-wrap align-items-center gap-2 mb-4">
+        <span><?php echo Text::sprintf('COM_UPDATEMONITOR_VEL_BANNER', (int) $s['vel']); ?></span>
+        <a class="btn btn-danger btn-sm ms-auto" href="<?php echo Route::_('index.php?option=com_updatemonitor&view=monitor&layout=security'); ?>"><?php echo Text::_('COM_UPDATEMONITOR_TAB_SECURITY'); ?></a>
+    </div>
+<?php endif; ?>
+
 <div class="row g-3 mb-4">
     <?php echo $card(Text::_('COM_UPDATEMONITOR_PENDING'), $s['pending']); ?>
     <?php echo $card(Text::_('COM_UPDATEMONITOR_SECURITY_UPDATES'), $s['security'], $s['security'] ? 'text-danger' : ''); ?>
+    <?php echo $card(Text::_('COM_UPDATEMONITOR_FINDINGS'), $s['findings'], $s['findings'] ? 'text-warning' : ''); ?>
     <?php echo $card(Text::_('COM_UPDATEMONITOR_IGNORED'), $s['ignored']); ?>
     <?php echo $card(Text::_('COM_UPDATEMONITOR_RESOLVED_30D'), $s['resolved30'], 'text-success'); ?>
 </div>
