@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="module" client="administrator" method="upgrade">
+    <name>MOD_UPDATEMONITOR</name>
+    <author>Your Name</author>
+    <creationDate>2026-11</creationDate>
+    <copyright>(C) 2026</copyright>
+    <license>GNU General Public License version 2 or later</license>
+    <version>1.4.0</version>
+    <description>MOD_UPDATEMONITOR_XML_DESCRIPTION</description>
+    <namespace path="src">Custom\Module\UpdateMonitor</namespace>
+    <files>
+        <folder module="mod_updatemonitor">services</folder>
+        <folder>src</folder>
+        <folder>tmpl</folder>
+    </files>
+    <languages folder="language">
+        <language tag="en-GB">en-GB/mod_updatemonitor.ini</language>
+        <language tag="en-GB">en-GB/mod_updatemonitor.sys.ini</language>
+        <language tag="de-DE">de-DE/mod_updatemonitor.ini</language>
+        <language tag="de-DE">de-DE/mod_updatemonitor.sys.ini</language>
+    </languages>
+</extension>
